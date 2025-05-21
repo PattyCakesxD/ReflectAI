@@ -6,7 +6,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 token = os.environ["GITHUB_TOKEN"]
 endpoint = "https://models.github.ai/inference"
@@ -43,7 +42,7 @@ def extract_text_from_file(uploaded_file):
     return uploaded_file.read().decode("utf-8")
 
 def main():
-    """ Runs the LLM, assuming a file is actually uploaded. """
+    # Runs the LLM, assuming a file is actually uploaded.
     if analyze and uploaded_file:
         try:
             file_content = extract_text_from_file(uploaded_file)
