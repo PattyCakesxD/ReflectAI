@@ -16,7 +16,7 @@ st.markdown("""
             #### See your resume through a *:rainbow[critical eye]*
             """)
 
-uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf, txt"])
+uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"])
 
 job = st.text_input("Enter the job you're targetting (optional)")
 analyze = st.button("Analyze Resume")
