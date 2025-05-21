@@ -6,7 +6,12 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+token = os.environ["GITHUB_TOKEN"]
+endpoint = "https://models.github.ai/inference"
+model = "openai/gpt-4.1"
+
 
 st.set_page_config(page_title="ReflectAI", layout="centered")
 
@@ -19,6 +24,7 @@ st.markdown("""
 uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"])
 
 job = st.text_input("Enter the job you're targetting (optional)")
+additional_details = st.text_input("Any additional details? (optional)")
 analyze = st.button("Analyze Resume")
 
 # Retrieves text data specifically from a PDF
@@ -46,21 +52,42 @@ def main():
                 st.error("The file is empty.")
                 st.stop()
 
-            prompt = f"""Your task is to help me secure more job interviews by optimizing my resume to highlight relevant skills and experiences. You will perform this task in a series of steps.
+            prompt = f"""Act as a senior hiring manager with over 20 years of experience in the ${job if job else 'general work' } industry. You have firsthand expertise in the ${job if job else 'general work'} industry and a deep understanding of what it takes to succeed in this position. Your task is to identify the ideal candidate based solely on their resume, ensuring they meet and exceed expectations for ${job if job else "general job applications"}.
+                        Break down the key qualifications, technical and soft skills, relevant experience, and project work that would make a candidate stand out. Highlight essential industry certifications, domain expertise, and the impact of past roles in shaping their suitability.
+                        Additionally, evaluate leadership qualities, problem-solving abilities, and adaptability to evolving industry trends. If applicable, consider cultural fit, teamwork, and communication skills required for success in the organization.
+                        Finally, provide a structured assessment framework what an exceptional resume should look like, red flags to avoid, and how to differentiate between a good candidate and a perfect hire. Ensure your response is comprehensive, strategic, and aligned with real-world hiring best practices.
 
-                        <step1>Start by compiling all the current information from my resume. Gather details about my education, work experience, skills, certifications, and any relevant projects or volunteer work. Organize this information into categories for easy access and reference. Save this organized information in variable $resume_data.</step1>
-                        <step2>Using $resume_data, write a new resume. Begin with a clear header that includes my name, contact information, and professional title or area of expertise. Structure the content into sections: Professional Summary, Skills, Work Experience, Education, and Additional Information. Focus on clarity and relevance to my career goals.</step2>
-                        <step3>Modify my resume for each job application. Examine the job description carefully and identify keywords and skills that the employer emphasizes. Adjust my resume to highlight my qualifications that match these requirements. This customization shows employers my candidacy aligns well with the job expectations. Save the tailored resume in $custom_resume.</step3>
-                        <step4>Proofread my tailored resume for any errors in spelling, grammar, or formatting. Pay special attention to consistency in style and detail. Consider asking a friend or using professional services to review my resume. This ensures it is polished and professional. Store the final version of my resume in $final_resume.</step4>
-
+                        The applicant also has some additional details that needs consideration:
+                        {additional_details}
+                        
                         Resume Content:
                         {file_content}
 
-                        Please provide your analysis in a clear, structured format with specific recommendations."""
+                        Keep the assessment concise and straight to the point.
+                        There is no need for recaps if there is no constructive criticism or assertment to go along with them.
+                        Though, if you deem it necessary, do include examples to drive a point.
+                        This includes change recommendations, such as changing a certain phrasing to another phrasing.
+                        
+                        If possible, colorize important messages. For example, red for critiques and green for positive reinforcement.
+                        The colors you may use are: green, orange, red. Which colors you use is up to your discretion, but it should relate to severity (e.g., the good, bad, and ugly)
+                        This program uses streamlit to show the output text. As such, when you colorcode, use the format ':color[text]' (ignore the single quotes), where color can be green or red, and text is the intended text for output.
+                        For example, the line ':green[Hello world!]' (ignore the single quotes) will write the string 'Hello world!' in green.
+                        If you do 'Hello :red[world!] Example' instead, you will get a white 'Hello', a red 'world!', and a white 'Example'.
+                        To clarify, the following syntax is invalid: ':orange: text'. It must be in the form ':color[text]'.
+
+                        Consider using bold text too, as if you were highlighting phrases.
+                        A table to explain things may also make things easier to interpret.
+
+                        Do not ask follow up questions.
+                        """
             
-            client = OpenAI(api_key=OPENAI_API_KEY)
+            client = OpenAI(
+                base_url=endpoint,
+                api_key=token,
+            )
+
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=model,
                 messages=[
                     {  
                         "role": "system",
@@ -72,7 +99,7 @@ def main():
                     }
                 ],
                 temperature=0.7,
-                max_tokens=1000
+                max_tokens=2000
             )
 
             st.markdown("### Analysis Results")
