@@ -1,6 +1,10 @@
-def main():
-    print("Hello from reflectai!")
+import streamlit as st
+import PyPDF2
+import io
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
 
+load_dotenv()
 
-if __name__ == "__main__":
-    main()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
