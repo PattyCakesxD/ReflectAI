@@ -21,9 +21,7 @@ uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]
 job = st.text_input("Enter the job you're targetting (optional)")
 analyze = st.button("Analyze Resume")
 
-"""
-Retrieves text data specifically from a PDF
-"""
+# Retrieves text data specifically from a PDF
 def extract_text_from_pdf(pdf_file):
     reader = PyPDF2.PdfReader(pdf_file)
     text = ""
@@ -32,9 +30,7 @@ def extract_text_from_pdf(pdf_file):
         text += page.extract_text() + "\n"
     return text
 
-"""
-Retrieves text data from an uploaded file to be used in an LLM
-"""
+# Retrieves text data from an uploaded file to be used in an LLM
 def extract_text_from_file(uploaded_file):
     if uploaded_file.type == "application/pdf":
         return extract_text_from_pdf(io.BytesIO(uploaded_file.read()))
