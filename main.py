@@ -5,6 +5,22 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+st.set_page_config(page_title="ReflectAI", layout="centered")
+
+st.markdown("""
+            # :blue[ResumeAI]
+
+            #### See your resume through a *:rainbow[critical eye]*
+            """)
+
+uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"])
+
+job = st.text_input("Enter the job you're targetting (optional)")
+analyze = st.button("Analyze Resume")
+
 """
 Retrieves text data specifically from a PDF
 """
@@ -25,22 +41,6 @@ def extract_text_from_file(uploaded_file):
     return uploaded_file.read().decode("utf-8")
 
 def main():
-    load_dotenv()
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-    st.set_page_config(page_title="ReflectAI", layout="centered")
-
-    st.markdown("""
-                # :blue[ResumeAI]
-
-                #### See your resume through a *:rainbow[critical eye]*
-                """)
-
-    uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"])
-
-    job = st.text_input("Enter the job you're targetting (optional)")
-    analyze = st.button("Analyze Resume")
-    
     """ Runs the LLM, assuming a file is actually uploaded. """
     if analyze and uploaded_file:
         try:
