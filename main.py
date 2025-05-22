@@ -25,5 +25,8 @@ pg = st.navigation(
 # Shared on all pages
 st.logo("assets/logo.png", size="large")
 
+st.set_page_config(page_title="ReflectAI", layout="centered")
+st.sidebar.markdown(":gray[:material/bolt: Built in 2025 :material/bolt:]")
+
 # Run navigation
 pg.run()

@@ -11,9 +11,6 @@ token = os.environ["GITHUB_TOKEN"]
 endpoint = "https://models.github.ai/inference"
 model = "openai/gpt-4.1"
 
-
-st.set_page_config(page_title="ReflectAI", layout="centered")
-
 st.markdown("""
             # :blue[ResumeAI]
 
