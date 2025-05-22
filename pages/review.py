@@ -66,6 +66,9 @@ def analyze_resume(uploaded_file, job, job_desc, additional_details):
 
                 Consider using bold text too, as if you were highlighting phrases.
                 A table to explain things may also make things easier to interpret.
+                
+                At the end, include a table that summarizes the assessment and include a rating out of 10 for all major sections/areas of expertise.
+                Do not sugar coat anything. Feel free to speak as critically as you feel.
 
                 Do not ask follow up questions.
                 """
@@ -105,13 +108,29 @@ def main():
     job_desc = st.text_area(":material/assignment_ind: **Job Description** :gray[(optional)]")
     additional_details = st.text_area(":material/edit: Any additional details? :gray[(optional)]")
 
-    if st.button("Analyze Resume", icon=":material/troubleshoot:"):
-        if not uploaded_file or not job:
-            st.warning("Please upload a file and enter a job title before analyzing.")
-        else:
-            with st.spinner("In analysis..."):
-                response = analyze_resume(uploaded_file, job, job_desc, additional_details)
+    c1, c2 = st.columns(2, vertical_alignment="center")
 
+    # Analyze Button
+    with c1:
+        analyze_button = st.button("Analyze Resume", icon=":material/troubleshoot:")
+
+    # Blank column placeholder
+    with c2:
+        status_placeholder = st.empty()
+
+    if analyze_button:
+        if not uploaded_file or not job:
+            st.toast(":orange[Missing file or job title.] Please try again!", icon=":material/error:")
+        else:
+            with status_placeholder:
+                with st.spinner(":blue[In analysis...]"):
+                    try:
+                        response = analyze_resume(uploaded_file, job, job_desc, additional_details)
+                    except Exception as e:
+                        st.error(f"Something went wrong: ${str(e)}")
+                        st.stop()
+
+            # If nothing goes wrong, output generated analysis
             st.markdown("### Analysis Results")
             st.divider()
             st.markdown(response.choices[0].message.content)
