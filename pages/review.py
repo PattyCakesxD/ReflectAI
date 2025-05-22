@@ -99,43 +99,60 @@ def analyze_resume(uploaded_file, job, job_desc, additional_details):
     return response
 
 def main():
+    # Page setup
     st.image("assets/banner_big.png")
     st.markdown("""
                 #### See your resume through a *:rainbow[critical eye]*
                 """)
 
-    uploaded_file = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"])
-
-    job = st.text_input(":material/business_center: **Career/Job Title**", max_chars=100)
-    job_desc = st.text_area(":material/assignment_ind: **Job Description** :gray[(optional)]")
-    additional_details = st.text_area(":material/edit: Any additional details? :gray[(optional)]")
-
+    # Initialize states
+    if 'processing' not in st.session_state:
+        st.session_state.processing = False
+    if 'analysis_response' not in st.session_state:
+        st.session_state.analysis_response = None
+    
+    # Inputs
+    uploaded_file       = st.file_uploader(":green[Upload your resume] :gray[(PDF or TXT)]", type=["pdf", "txt"], disabled=st.session_state.processing)
+    job                 = st.text_input(":material/business_center: **Career/Job Title**", max_chars=100, disabled=st.session_state.processing)
+    job_desc            = st.text_area(":material/assignment_ind: **Job Description** :gray[(optional)]", disabled=st.session_state.processing)
+    additional_details  = st.text_area(":material/edit: Any additional details? :gray[(optional)]", disabled=st.session_state.processing)
+    
+    # Layout
     c1, c2 = st.columns(2, vertical_alignment="center")
-
-    # Analyze Button
     with c1:
-        analyze_button = st.button("Analyze Resume", icon=":material/troubleshoot:")
+        analyze_button = st.button("Analyze Resume", icon=":material/troubleshoot:", disabled=st.session_state.processing)
 
-    # Blank column placeholder
     with c2:
         status_placeholder = st.empty()
 
+    # Validate inputs
     if analyze_button:
         if not uploaded_file or not job:
             st.toast(":orange[Missing file or job title.] Please try again!", icon=":material/error:")
         else:
-            with status_placeholder:
-                with st.spinner(":blue[In analysis...]"):
-                    try:
-                        response = analyze_resume(uploaded_file, job, job_desc, additional_details)
-                    except Exception as e:
-                        st.error(f"Something went wrong: ${str(e)}")
-                        st.stop()
+            st.session_state.processing = True
+            st.rerun()
 
-            # If nothing goes wrong, output generated analysis
-            st.markdown("### Analysis Results")
-            st.divider()
-            st.markdown(response.choices[0].message.content)
+    # Analysis
+    if st.session_state.processing:   
+        with status_placeholder:
+            with st.spinner(":blue[In analysis...]"):
+                try:
+                    response = analyze_resume(uploaded_file, job, job_desc, additional_details)
+                    st.session_state.analysis_response = response
+                except Exception as e:
+                    st.error(f"Something went wrong: ${str(e)}")
+                    st.stop()
+                finally:
+                    st.session_state.processing = False
+                    st.rerun()
+    
+    # Output LLM response
+    res = st.session_state.analysis_response
+    if res:
+        st.markdown("### Analysis Results")
+        st.divider()
+        st.markdown(res.choices[0].message.content)
 
 if __name__ == "__main__":
     main()
