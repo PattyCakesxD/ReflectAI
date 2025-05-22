@@ -67,7 +67,9 @@ def analyze_resume(uploaded_file, job, job_desc, additional_details):
                 Consider using bold text too, as if you were highlighting phrases.
                 A table to explain things may also make things easier to interpret.
                 
-                At the end, include a table that summarizes the assessment and include a rating out of 10 for all major sections/areas of expertise.
+                At the end, include a table that summarizes the assessment in 3 columns: Areas, Rating, and Comments. A "Summarized Assessment".
+                Areas refers to the major sections or areas of expertise you've identified or have covered implicitly.
+                For the ratings, format it explicitly out of 10, e.g. '7/10'. Color-code as relevant.
                 Do not sugar coat anything. Feel free to speak as critically as you feel.
 
                 Do not ask follow up questions.
@@ -90,7 +92,7 @@ def analyze_resume(uploaded_file, job, job_desc, additional_details):
                 "content": prompt
             }
         ],
-        temperature=0.7,
+        temperature=0.8,
         max_tokens=2000
     )
     
