@@ -142,6 +142,7 @@ def main():
                     st.session_state.analysis_response = response
                 except Exception as e:
                     st.error(f"Something went wrong: ${str(e)}")
+                    st.session_state.analysis_response = None
                     st.stop()
                 finally:
                     st.session_state.processing = False
